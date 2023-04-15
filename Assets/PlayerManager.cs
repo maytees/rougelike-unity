@@ -27,7 +27,6 @@ public class PlayerManager : MonoBehaviour
     public PlayerState playerState = PlayerState.Alive;
 
     private bool canDash = true;
-    private bool playerCollision = true;
     private float currentDashTime;
 
     public float startDashTime = 1f;
@@ -77,7 +76,6 @@ public class PlayerManager : MonoBehaviour
     private IEnumerator dash(Vector2 direction)
     {
         canDash = false;
-        playerCollision = false;
         currentDashTime = startDashTime;
         trailRenderer.emitting = true; 
         
@@ -96,7 +94,6 @@ public class PlayerManager : MonoBehaviour
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
-        playerCollision = true;
     }
     
     private void spawnRandomXP()

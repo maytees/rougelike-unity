@@ -25,9 +25,23 @@ public class PlayerManager : MonoBehaviour
     public float playerSpeed;
         
     public PlayerState playerState = PlayerState.Alive;
+
+    private bool canDash = true;
+    private bool playerCollision = true;
+    private float currentDashTime;
+
+    public float startDashTime = 1f;
+    public float dashSpeed = 2f;
+    public float dashCooldown = 5f;
+    
+    private Rigidbody2D rb;
+    private TrailRenderer trailRenderer; 
     
     private void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
+        trailRenderer = GetComponent<TrailRenderer>();
+        
         healthBar.setMaxHealth(100);
     }
 
@@ -50,9 +64,39 @@ public class PlayerManager : MonoBehaviour
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
 
-        Vector3 movement = new Vector3(playerSpeed * inputX, playerSpeed * inputY, 0);
+        Vector2 movement = new Vector3(playerSpeed * inputX, playerSpeed * inputY, 0);
+
+        if (canDash && Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(dash(movement));
+        }
 
         transform.Translate(movement * Time.deltaTime);
+    }
+
+    private IEnumerator dash(Vector2 direction)
+    {
+        canDash = false;
+        playerCollision = false;
+        currentDashTime = startDashTime;
+        trailRenderer.emitting = true; 
+        
+        while (currentDashTime > 0f)
+        {
+            currentDashTime -= Time.deltaTime;
+
+            rb.velocity = direction * dashSpeed;
+
+            yield return null;
+        }
+        
+        rb.velocity = new Vector2(0f, 0f);
+        
+        trailRenderer.emitting = false;
+
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
+        playerCollision = true;
     }
     
     private void spawnRandomXP()

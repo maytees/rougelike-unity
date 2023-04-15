@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public enum PlayerState {
+    Dead,
+    Alive
+}
+
 public class PlayerManager : MonoBehaviour
 {
     public int experience = 0;
@@ -11,9 +16,23 @@ public class PlayerManager : MonoBehaviour
     public float searchRadius = 5f;
     public float pickupSpeed = 5f;
     
+    public HealthBar healthBar;
+
+    public PlayerState playerState = PlayerState.Alive;
+    
+    private void Start()
+    {
+        healthBar.setMaxHealth(100);
+    }
+
     // Update is called once per frame
     void Update()
     {
+        if (healthBar.slider.value <= 0)
+        {
+            playerState = PlayerState.Dead;
+        }
+        
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, searchRadius);
 
         foreach (Collider2D hitCollider in hitColliders)
@@ -39,6 +58,12 @@ public class PlayerManager : MonoBehaviour
         {
             experience++;
             Destroy(other.gameObject);
+            return;
+        }
+        
+        if (other.gameObject.name.Equals("Enemy")) 
+        {
+            healthBar.takeDamage(20);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditorInternal;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -20,6 +21,11 @@ public class PlayerManager : MonoBehaviour
     public float xpMaxSpawnRadi = 50f;
     public int xpSpawnLimit = 100;
     public GameObject xpObject;
+
+    public float enemiesSpawnLimit = 100;
+    public float enemyMinSpawnRadi = 50f;
+    public float enemyMaxSpawnRadi = 100f;
+    public GameObject enemyObject;
     
     public HealthBar healthBar;
     public float playerSpeed;
@@ -56,6 +62,7 @@ public class PlayerManager : MonoBehaviour
         playerMovement(); 
         checkPickupXP();
         spawnRandomXP();
+        spawnRandomEnemies();
     }
 
     private void playerMovement()
@@ -115,6 +122,28 @@ public class PlayerManager : MonoBehaviour
             }
         }
     }
+
+    private void spawnRandomEnemies()
+    {
+        int enemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
+
+        if ((Random.Range(0f, 1f) < 0.3f) && enemies <= enemiesSpawnLimit)
+        {
+            Vector2 randomCircle =
+                Random.insideUnitCircle.normalized * Random.Range(enemyMinSpawnRadi, enemyMaxSpawnRadi);
+            Vector3 spawnPosition = transform.position + new Vector3(randomCircle.x, randomCircle.y, 0f);
+            Instantiate(enemyObject, spawnPosition, Quaternion.identity);
+        }
+
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            if ((Vector3.Distance(enemy.transform.position, transform.position) > enemyMaxSpawnRadi))
+            {
+                Destroy(enemyObject);
+            }
+        }
+    }
+    
     private void checkPickupXP()
     { 
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, searchRadius);
@@ -145,7 +174,7 @@ public class PlayerManager : MonoBehaviour
             return;
         }
         
-        if (other.gameObject.name.Equals("Enemy")) 
+        if (other.gameObject.tag.Equals("Enemy")) 
         {
             healthBar.takeDamage(20);
         }

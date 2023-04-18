@@ -5,14 +5,19 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public PlayerManager playerManager; 
-    public GameObject player;
+    private PlayerManager playerManager; 
+    private GameObject player;
     
     public float speed = 2f;
 
     public float searchRadius = 1f;
 
     private bool _isCollidingWithPlayer = false;
+   
+    void Start() {
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerManager = player.GetComponent<PlayerManager>();
+    } 
     
     // Update is called once per frame
     void Update()

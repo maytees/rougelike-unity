@@ -32,7 +32,7 @@ public class PlayerManager : MonoBehaviour
         
     public PlayerState playerState = PlayerState.Alive;
 
-    private bool canDash = true;
+    public bool canDash = true;
     private float currentDashTime;
 
     public float startDashTime = 1f;
@@ -70,9 +70,9 @@ public class PlayerManager : MonoBehaviour
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
 
-        Vector2 movement = new Vector3(playerSpeed * inputX, playerSpeed * inputY, 0);
+        Vector2 movement = new Vector2(inputX * playerSpeed, inputY * playerSpeed);
 
-        if (canDash && Input.GetKeyDown(KeyCode.Space))
+        if (canDash && Input.GetKeyDown(KeyCode.Space) && !movement.Equals(new Vector2(0, 0)))
         {
             StartCoroutine(dash(movement));
         }
@@ -125,9 +125,9 @@ public class PlayerManager : MonoBehaviour
 
     private void spawnRandomEnemies()
     {
-        int enemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
-
-        if ((Random.Range(0f, 1f) < 0.3f) && enemies <= enemiesSpawnLimit)
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        
+        if ((Random.Range(0f, 1f) < 0.3f) && enemies.Length <= enemiesSpawnLimit)
         {
             Vector2 randomCircle =
                 Random.insideUnitCircle.normalized * Random.Range(enemyMinSpawnRadi, enemyMaxSpawnRadi);
@@ -135,11 +135,11 @@ public class PlayerManager : MonoBehaviour
             Instantiate(enemyObject, spawnPosition, Quaternion.identity);
         }
 
-        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        foreach (GameObject enemy in enemies)
         {
             if ((Vector3.Distance(enemy.transform.position, transform.position) > enemyMaxSpawnRadi))
             {
-                Destroy(enemyObject);
+                Destroy(enemy);
             }
         }
     }

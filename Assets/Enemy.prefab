@@ -125,10 +125,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2569efe44b6ae60409b776d84b8c0110, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerManager: {fileID: 0}
-  player: {fileID: 0}
-  speed: 2
-  searchRadius: 5
+  speed: 20
+  searchRadius: 10000
 --- !u!50 &8807011956063372100
 Rigidbody2D:
   serializedVersion: 4
